@@ -82,13 +82,11 @@ deps_jetson:
 download:
 	rm -rf $(TMP_DIR)opencv
 	mkdir $(TMP_DIR)opencv
-	cd $(TMP_DIR)opencv
-	curl -Lo opencv.zip https://github.com/opencv/opencv/archive/$(OPENCV_VERSION).zip
-	unzip -q opencv.zip
-	curl -Lo opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/$(OPENCV_VERSION).zip
-	unzip -q opencv_contrib.zip
-	rm opencv.zip opencv_contrib.zip
-	cd -
+	curl -Lo $(TMP_DIR)opencv/opencv.zip https://github.com/opencv/opencv/archive/$(OPENCV_VERSION).zip
+	unzip -q $(TMP_DIR)opencv/opencv.zip -d $(TMP_DIR)opencv
+	curl -Lo $(TMP_DIR)opencv/opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/$(OPENCV_VERSION).zip
+	unzip -q $(TMP_DIR)opencv/opencv_contrib.zip -d $(TMP_DIR)opencv
+	rm -d $(TMP_DIR)opencv.zip $(TMP_DIR)opencv_contrib.zip
 
 # Download openvino source tarballs.
 download_openvino:
@@ -275,10 +273,8 @@ install_all: deps download download_openvino sudo_pre_install_clean build_openvi
 
 # Install system wide.
 sudo_install:
-	cd $(TMP_DIR)opencv/opencv-$(OPENCV_VERSION)/build
-	sudo $(MAKE) install
-	sudo ldconfig
-	cd -
+	cd $(BUILD_PATH) && sudo $(MAKE) install
+	cd $(BUILD_PATH) && sudo ldconfig
 
 # Install system wide.
 sudo_install_openvino:
